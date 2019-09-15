@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<section id="search" class="section book-details">
+    <div class="container">
+        <div class="book">
+            <img class="bookimg" src="/media/{{ book.image }}"/>
+            <a href="{%  url 'add_to_cart' book.slug %}" class="waves-effect light-blue lighten-2 btn add">Add to a cart</a>
+            <a href="{%  url 'remove_from_cart' book.slug %}" class="waves-effect red btn add">Remove from cart</a>
+
+        <!-- Displaying messages-->
+
+        </div>
+        <div class="text">
+        <h3> {{ book.title }}</h3>
+        <h5> Author: {{ book.author }} </h5>
+            <p class="flow-text">Paperback: {{ book.pages }} pages </p>
+            <p> Publisher: {{ book.publisher }} </p>
+            <p> Language: {{ book.language }} </p>
+            <p> Product Dimensions: {{ book.product_dimensions }} inches </p>
+            <p> Shipping Weight: {{ book.shipping_weight }}pounds </p>
+            <p> Average Customer Review: {{ book.rating }}</p>
+        <p> PRICE: {{ book.price }}$ </p>
+        </div>
+
+    </div>
+</section>
+
+{% endblock content %}

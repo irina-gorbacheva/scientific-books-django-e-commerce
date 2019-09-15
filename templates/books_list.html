@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+    <section id="cart" class="section book-details">
+        <div class="container">
+            <h2>Books in your cart:</h2>
+            {% for book in books %}
+                {{ book }}
+            {% endfor %}
+        </div>
+    </section>
+{% endblock content %}

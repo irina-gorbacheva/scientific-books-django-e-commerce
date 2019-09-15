@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+
+<section id="categories" class="section section-categories scrollspy">
+    <div class="container">
+        <h4 class="center">
+            <span class="light-blue-text text-darken-4">{{ category }} </span> books
+        </h4>
+        <div class="row">
+            {% for book in books %}
+            <div class="col s12 m3">
+                <div class="card">
+                    <div class="card-image discipline hoverable">
+
+                        <img src="/media/{{ book.image }}" class="responsive-img book_list_img">
+                    </div>
+                    <div class="card-content">
+                        <a href="{%  url 'book_details' book.slug %}"> {{ book.title }}</a>
+                        <p>{{ book.price }}$ </p>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+{% if books.paginator.num_pages > 1 %}
+<div class="container">
+    <span class="step-links">
+        <ul class="pagination center-align">
+             {% if books.has_previous %}
+                 <li class="waves-effect"><a href="?page={{ books.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+             {% endif %}
+
+            {% for page_num in range %}
+                <li class="waves-effect{% if books.number == page_num  %} active light-blue{% endif %}"><a href="?page={{page_num}}">{{ page_num }}</a></li>
+            {% endfor %}
+
+            {% if books.has_next %}
+                 <li class="waves-effect"><a href="?page={{ books.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+            {% endif %}
+    </ul>
+    </span>
+</div>
+{% endif %}
+
+{% endblock content %}

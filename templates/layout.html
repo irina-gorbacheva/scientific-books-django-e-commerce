@@ -1,0 +1,152 @@
+ {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    {% block extra_links %}
+    {% endblock extra_links %}
+     <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://kit.fontawesome.com/10a644efe6.js"></script>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>Science World</title>
+</head>
+
+<body id="home" class="scrollspy">
+    <!-- Navbar -->
+    <div class="navbar-fixed">
+        <nav class="light-blue darken-4">
+            <a href="{% url 'home' %}" class="brand-logo home-logo">Science World</a>
+                <div cnavs="nav-wrapper">
+
+                    <a href="#" data-target="mobile-nav"
+                       class="sidenav-trigger">
+                        <i class="material-icons">menu</i>
+                    </a>
+
+                    <ul class="right hide-on-med-and-down">
+
+                        <li  {% if request.get_full_path == '/category/astronomy/' %} class="active" {% endif %}>
+                            <a href="{%  url 'category' 'astronomy'%}">Astronomy</a>
+                        </li>
+                        <li  {% if request.get_full_path == '/category/physics/' %} class="active" {% endif %}>
+                            <a href="{%  url 'category' 'physics'%}">Physics</a>
+                        </li>
+                        <li  {% if request.get_full_path == '/category/mathematics/' %} class="active" {% endif %}>
+                            <a href="{%  url 'category' 'mathematics'%}">Mathematics</a>
+                        </li>
+                        <li  {% if request.get_full_path == '/category/engineering/' %} class="active" {% endif %}>
+                            <a href="{%  url 'category' 'engineering'%}">Engineering</a>
+                        </li>
+                        <li  {% if request.get_full_path == '/category/computer_science/' %} class="active" {% endif %}>
+                            <a href="{%  url 'category' 'computer_science'%}">Computer Science</a>
+                        </li>
+                        <li  {% if request.get_full_path == '/category/biology/' %} class="active" {% endif %}>
+                            <a href="{%  url 'category' 'biology'%}">Biology</a>
+                        </li>
+                        {% if not request.user.is_authenticated %}
+                            <li>
+                                <a class="signin_btn waves-effect light-blue lighten-2 btn-small" href="{% url 'account_login' %}">Login/Signup</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{%  url 'cart' %}" class="btn-small light-blue darken-4 cart"><i class="material-icons light-blue-text">shopping_cart</i></a>
+                            </li>
+                             <li>
+                                <a class="waves-effect light-blue lighten-2 btn-small signout_btn" href="{% url 'account_logout' %}">Logout</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+        </nav>
+    </div>
+
+    <ul class="sidenav" id="mobile-nav">
+        <li>
+            <a href="{%  url 'category' 'astronomy'%}" {% if request.get_full_path == '/category/astronomy/' %} class="active" {% endif %}>Astronomy</a>
+        </li>
+        <li>
+            <a href="{%  url 'category' 'physics'%}" {% if request.get_full_path == '/category/physics/' %} class="active" {% endif %}>Physics</a>
+        </li>
+        <li>
+           <a href="{%  url 'category' 'mathematics'%}" {% if request.get_full_path == '/category/mathematics/' %} class="active" {% endif %}>Mathematics</a>
+        </li>
+        <li>
+            <a href="{%  url 'category' 'engineering'%}" {% if request.get_full_path == '/category/engineering/' %} class="active" {% endif %}>Engineering</a>
+        </li>
+        <li>
+            <a href="{%  url 'category' 'computer_science'%}" {% if request.get_full_path == '/category/computer_science/' %} class="active" {% endif %}>Computer Science</a>
+        </li>
+        <li>
+            <a href="{%  url 'category' 'biology'%}" {% if request.get_full_path == '/category/biology/' %} class="active" {% endif %}>Biology</a>
+        </li>
+        {% if not request.user.is_authenticated %}
+            <li>
+                <a class="waves-effect light-blue lighten-2 btn-small signin_btn">Login</a>
+            </li>
+        {% else %}
+            <li>
+                <a class="waves-effect light-blue lighten-2 btn-small signout_btn">Logout</a>
+            </li>
+            <li>
+                <a class="btn-small light-blue darken-4 cart"><i class="material-icons light-blue-text">shopping_cart</i></a>
+            </li>
+        {% endif %}
+    </ul>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert blue lighten-5" id="message">
+                <div class="container">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+
+    {% endif %}
+
+{% block content %}
+{% endblock content %}
+
+    <!-- Footer -->
+    <footer class="page-footer light-blue darken-4">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Science world</h5>
+                    <p class="grey-text text-lighten-4">For more information please contact us</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Contact us</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="#!">Phone: + 38 099 123 45 67</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">E-mail: science.world@gmail.com </a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Telegram: @ScienceWorld </a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Facebook: facebook.com/science_world</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright blue darken-4">
+            <div class="container center">
+                 2019 (c) Science World
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}
+    {% endblock extra_scripts %}
+<script>
+var message = document.getElementById("message");
+setTimeout(function(){
+   message.style.display = "none";
+}, 3000);
+</script>
+</body>
+</html>

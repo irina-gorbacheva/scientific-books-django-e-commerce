@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h2>Shopping Cart</h2>
+        {% if not order.books.exists %}
+            <h5>Your cart is empty</h5>
+        {% else %}
+            <table class="responsive-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Book</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for ordered_book in order.books.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ ordered_book.book.title}} by {{ ordered_book.book.author }}</td>
+                        <td>{{ ordered_book.book.get_category_display }}</td>
+                        <td>{{ ordered_book.book.price }}</td>
+                        <td> <a href="{% url 'remove_single_item_from_cart' ordered_book.book.slug %}"><i class="fas fa-minus"></i></a> {{ ordered_book.quantity }} <a href="{% url 'add_single_item_to_cart' ordered_book.book.slug %}"><i class="fas fa-plus"></i></a> </td>
+                        <td>${{ ordered_book.get_final_price}}
+
+                        </td>
+                        <td><a href="{% url 'remove_from_cart' ordered_book.book.slug %}" class="right-align"><i class="fas fa-trash"></i></a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        <div class="right-align total">
+            <h5>Subtotal: ${{ order.get_total_price }}</h5>
+            <a class="waves-effect waves-light btn green" href="{% url 'checkout' %}">Checkout</a>
+        </div>
+    {% endif %}
+    </div>
+
+
+
+{% endblock content %}

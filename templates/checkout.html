@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="form1 white z-depth-2">
+    <h3>Checkout form</h3>
+        <div class="row">
+            <form class="col s12" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input name="first_name" id="first_name" type="text" class="validate">
+                        <label for="first_name">First Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input name="last_name" id="last_name" type="text" class="validate">
+                        <label for="last_name">Last Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input name="address" id="address" type="text" class="validate">
+                        <label for="address">Address </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s4">
+                        <input name="country" id="country" type="text" class="validate">
+                        <label for="country">Country</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input name="city" id="city" type="text" class="validate">
+                        <label for="city">City</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input name="zip" id="zip" type="text" class="validate">
+                        <label for="zip">Zip</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <p>
+                      <label>
+                        <input value="S" class="with-gap" type="radio"name="payment_option"/>
+                        <span>Stripe</span>
+                      </label>
+                    </p>
+                </div>
+                <div class="row">
+                    <p>
+                      <label>
+                        <input value="P" class="with-gap" type="radio" name="payment_option" />
+                        <span>Paypal</span>
+                      </label>
+                    </p>
+                </div>
+                <hr>
+                <div class="row">
+                    <p>
+                        <label>
+                            <input type="checkbox" name="same_shipping_address" id="same_shipping_address" class="filled-in light-blue lighten-2">
+                            <span>Shipping address same as billing address</span>
+                        </label>
+                    </p>
+                </div>
+                <div class="row">
+                    <p>
+                        <label>
+                            <input type="checkbox" name="save_info" class="filled-in light-blue lighten-2">
+                            <span>Save info</span>
+                        </label>
+                    </p>
+
+                </div>
+                <hr>
+                <div class="right-align total">
+                    <button type="submit" class="waves-effect waves-light btn green checkout">Continue</button>
+                </div>
+             </form>
+        </div>
+     </div>
+
+    <div class="form2 white z-depth-2">
+        <h4>Your order</h4>
+    </div>
+
+
+{% endblock content %}

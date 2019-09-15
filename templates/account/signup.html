@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<div class="container_login white z-depth-2 box">
+	<div id="login" class="col s12">
+        <div class="form-container">
+            <h4 class="light-blue-text text-darken-4"><a href="#login">{% trans "Sign Up" %}</a></h4>
+            <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
+
+            <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                {% if redirect_field_value %}
+                      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+                <button type="submit" class="btn waves-effect light-blue lighten-2">{% trans "Submit" %}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
