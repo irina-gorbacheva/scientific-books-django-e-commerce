@@ -13,7 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.conf.urls import include
+from django.urls import path
 from django.contrib import admin
 
 from django.conf import settings
@@ -23,22 +24,27 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from bookstore import views
 
 urlpatterns = [
-    url(r'^$', views.HomeView.as_view(), name='home'),
+    path('', views.HomeView.as_view(), name='home'),
 
-    url(r'^category/(?P<subject>[\w\-]+)/$', views.CategoryView.as_view(), name='category'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^accounts/', include('allauth.urls')),
+    path('category/<subject>/', views.CategoryView.as_view(), name='category'),
+    path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
+    path('error', views.error, name='error'),
 
-    url(r'^book_details/(?P<slug>[-\w]+)/$', views.BookDetailView.as_view(), name='book_details'),
+    path('book_details/<slug>/', views.BookDetailView.as_view(), name='book_details'),
 
-    url(r'^cart', views.cart, name='cart'),
-    url(r'^checkout', views.CheckoutView.as_view(), name='checkout'),
-    url(r'^payment/(?P<payment_option>[\w\-]+)/$', views.PaymentView.as_view(), name='payment'),
+    path('cart', views.cart, name='cart'),
+    path('checkout', views.CheckoutView.as_view(), name='checkout'),
+    path('payment/<payment_option>/', views.PaymentView.as_view(), name='payment'),
+    path('add_promocode', views.add_promocode, name='add_promocode'),
+    path('order_received/<ref_code>/', views.order_received, name='order_received'),
+    path('refund/<ref_code>/', views.RefundView.as_view(), name='refund'),
+    path('orders', views.orders, name='orders'),
 
-    url(r'^add_to_cart/(?P<slug>[-\w]+)/$', views.add_to_cart, name='add_to_cart'),
-    url(r'^remove_from_cart/(?P<slug>[-\w]+)/$', views.remove_from_cart, name='remove_from_cart'),
-    url(r'^add_single_item_to_cart/(?P<slug>[-\w]+)/$', views.add_single_item_to_cart, name='add_single_item_to_cart'),
-    url(r'^remove_single_item_from_cart/(?P<slug>[-\w]+)/$', views.remove_single_item_from_cart,
+    path('add_to_cart/<slug>/', views.add_to_cart, name='add_to_cart'),
+    path('remove_from_cart/<slug>/', views.remove_from_cart, name='remove_from_cart'),
+    path('add_single_item_to_cart/<slug>/', views.add_single_item_to_cart, name='add_single_item_to_cart'),
+    path('remove_single_item_from_cart/<slug>/', views.remove_single_item_from_cart,
         name='remove_single_item_from_cart'),
 
    ## url(r'^book_details/(\d+)/', views.book_details, name='book_details'),

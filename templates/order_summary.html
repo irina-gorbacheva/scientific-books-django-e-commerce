@@ -1,0 +1,40 @@
+    <div class="form2 white z-depth-2">
+        <h4>Your order: </h4>
+        <table class="responsive-table">
+            <tbody>
+            {% for ordered_book in order.books.all %}
+                <tr>
+                    <td> {{ ordered_book.book.title }} by {{ ordered_book.book.author }} x {{ ordered_book.quantity }}</td>
+                    <td> {{ ordered_book.get_final_price}}$</td>
+                </tr>
+            {% endfor %}
+            {% if order.promocode %}
+                <tr>
+                    <td class="blue lighten-4">USED PROMOCODE: {{ order.promocode.code }} </td>
+                    <td class="blue lighten-4"><b> -{{ order.promocode.percentage }}%</b></td>
+                </tr>
+            {% endif %}
+                <tr>
+                    <td class="grey lighten-4"><b>Total: </b></td>
+                    <td class="grey lighten-4"><b>{{ order.get_total_price }}$</b></td>
+                </tr>
+            </tbody>
+        </table>
+        {% if not order.promocode and DISPLAY_PROMO_FORM %}
+        <div class="row">
+            <form class="col s12" action="{% url 'add_promocode' %}" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="input-field col s6">
+                       {% comment %}<input id="promocode" type="text" class="validate"> {% endcomment %}
+                        {{ promocodeform }}
+                    </div>
+                    <div class="input-field col s6">
+                       <button class="btn light-blue lighten-2 waves-effect waves-light promo" type="submit" name="action">Redeem
+                       </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>

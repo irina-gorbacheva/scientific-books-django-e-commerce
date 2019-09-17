@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Your orders</h2>
+            <table class="responsive-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reference code</th>
+                        <th>Books</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.ordered_date }}</td>
+                        <td>{{ order.ref_code }}</td>
+                        <td>
+                            <ul>
+                                {% for ordered_book in order.books.all %}
+                                    <li>
+                                        {{ ordered_book.book.title}} by {{ ordered_book.book.author }} x {{ ordered_book.quantity }} - {{ ordered_book.get_final_price}}$
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{% if order.promocode %}
+                                USED PROMOCODE: {{ order.promocode.code }} -{{ order.promocode.percentage }}%
+                            {% endif %}
+                            Total: {{ order.get_total_price }}$
+                        </td>
+                        <td>
+                            {% if order.received %}
+                                Received
+                            {% elif order.being_delivered %}
+                                On the way
+                            {% elif order.received and order.refund_requested %}
+                                Received, requested refund
+                            {% elif not order.received and order.refund_requested %}
+                                Not received, requested refund
+                            {% elif order.received and order.refund_granted %}
+                                Received, granted refund
+                            {% elif not order.received and order.refund_granted %}
+                                Not received, granted refund
+                            {% else %}
+                                Processing
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if not order.received %}
+                                <a href="{% url 'order_received' order.ref_code %}" class="waves-effect waves-light btn green right-align table-btn">Order received</a>
+                            {% endif %}
+                            {% if not order.refund_requested or order.refund_granted %}
+                                <a href="{% url 'refund' order.ref_code %}" class="waves-effect waves-light btn red right-align table-btn">Request refund</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+{% endblock content %}

@@ -6,23 +6,25 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from django.views.generic import ListView, DetailView, View, TemplateView
-from .models import Book, OrderedBook, Order, BillingInfo, Payment
-from .forms import CheckoutForm
+from .models import Book, OrderedBook, Order, BillingInfo, Payment, Promocode, Refund
+from .forms import CheckoutForm, PromocodeForm, RefundForm
 
 import datetime
 import stripe
+import random
+import string
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+def generate_ref_code():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits + string.ascii_uppercase, k=20))
 
 class HomeView(View):
     def get(self, *args, **kwargs):
         return render(self.request, 'index.html')
 
-
-
-def login_register(request):
-    return render(request, 'login_register.html')
-
+def error(request):
+    return render(request, 'error.html')
 
 class CategoryView(View):
     CATEGORY_CHOICES = [("AS", "astronomy"), ("PH", "physics"), ("MA", "mathematics"),
@@ -38,7 +40,7 @@ class CategoryView(View):
                 break
         # unknown subject
         if shortcut == '':
-            return render(self.request, 'error.html')
+            return redirect('error')
 
         books_list = Book.objects.filter(category=shortcut)
         paginator = Paginator(books_list, 8)
@@ -75,8 +77,30 @@ def cart(request):
         return render(request, "cart.html", context)
     except Order.DoesNotExist:
         messages.warning(request, "You do not have an active order")
-        return redirect("/")
+        return redirect("home")
 
+def orders(request):
+    try:
+        orders = Order.objects.filter(user=request.user, ordered=True)
+        context = {
+            'orders': orders
+        }
+        return render(request, "orders.html", context)
+    except Order.DoesNotExist:
+        messages.warning(request, "You do not have any orders")
+        return redirect("home")
+
+def order_received(request, ref_code):
+    try:
+        order = Order.objects.filter(user=request.user, ordered=True, ref_code=ref_code)
+        order.received = True
+        order.save()
+
+        messages.success(request, "You confirmed receiving of the order, thank you!")
+        return redirect("orders")
+    except Order.DoesNotExist:
+        messages.error(request, "Order does not exist")
+        return redirect("orders")
 
 @login_required
 def add_to_cart(request, slug):
@@ -94,7 +118,7 @@ def add_to_cart(request, slug):
         order = Order.objects.get(user=request.user, ordered=False)
         # if not, then create one and add an ordered book
     except Order.DoesNotExist:
-        order = Order.objects.create(user=request.user, ordered_date=timezone.now())
+        order = Order.objects.create(user=request.user, creation_date=timezone.now())
         order.books.add(ordered_book)
         messages.info(request, "This book was added to your cart")
         return redirect("book_details", slug=slug)
@@ -132,6 +156,7 @@ def remove_from_cart(request, slug):
         )[0]
         # book is in user's cart
         order.books.remove(ordered_book)
+        ordered_book.delete()
         messages.info(request, "This book was removed from your cart")
 
     # order doesn't contain item to remove
@@ -167,6 +192,7 @@ def remove_single_item_from_cart(request, slug):
     # there is a single instance of a book
     if (ordered_book.quantity == 1):
         order.books.remove(ordered_book)
+        ordered_book.delete()
         messages.info(request, "This book was removed from your cart")
     # more than 1 instance of the book
     else:
@@ -180,16 +206,25 @@ def remove_single_item_from_cart(request, slug):
 # !!! CHECKOUT !!!
 class CheckoutView(View):
     PAYMENT_CHOICES = (
-        ('P', 'Paypal'),
-        ('S', 'Stripe')
+        ('P', 'paypal'),
+        ('S', 'stripe')
     )
 
     def get(self, *args, **kwargs):
-        form = CheckoutForm
-        context = {
-            'form': form
-        }
-        return render(self.request, 'checkout.html')
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            form = CheckoutForm
+            context = {
+                'form': form,
+                'promocodeform': PromocodeForm(),
+                'order': order,
+                'DISPLAY_PROMO_FORM': True,
+            }
+            return render(self.request, 'checkout.html', context)
+        except Order.DoesNotExist:
+            messages.error(self.request, "You do not have an active order")
+            return redirect('cart')
+
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
@@ -240,11 +275,15 @@ class PaymentView(View):
         except Order.DoesNotExist:
             messages.error(self.request, "You do not have an active order")
             return redirect('cart')
+        except Exception:
+            return redirect('error')
 
         context = {
-            'payment_option': self.kwargs['payment_option']
+            'payment_option': self.kwargs['payment_option'],
+            'order': order,
+            'DISPLAY_PROMO_FORM': False,
         }
-        return render(self.request, "payment2.html", context)
+        return render(self.request, "payment.html", context)
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
@@ -266,45 +305,117 @@ class PaymentView(View):
             payment.amount = order.get_total_price()
             payment.save()
 
+            ordered_books = order.books.all()
+            ordered_books.update(ordered=True)
+
+            for book in ordered_books:
+                book.save()
+
             order.ordered = True
             order.ordered_date = datetime.datetime.now().date()
             order.payment = payment
+            order.ref_code = generate_ref_code()
             order.save()
 
             messages.success(self.request, "Your order was successful")
-            return redirect("/")
+            return redirect("home")
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
             body = e.json_body
             err = body.get('error', {})
             messages.error(self.request, f"{err.get('message')}")
-            return redirect("/")
+            return redirect("home")
         except stripe.error.RateLimitError as e:
             # Too many requests made to the API too quickly
             messages.error(self.request, "Time limit error")
-            return redirect("/")
+            return redirect("home")
         except stripe.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
             messages.error(self.request, "Invalid parameters")
-            return redirect("/")
+            return redirect("home")
         except stripe.error.AuthenticationError as e:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
             messages.error(self.request, "Failed authentication")
-            return redirect("/")
+            return redirect("home")
         except stripe.error.APIConnectionError as e:
             # Network communication with Stripe failed
             messages.error(self.request, "Failed network communication")
-            return redirect("/")
+            return redirect("home")
         except stripe.error.StripeError as e:
             # Display a very generic error to the user, and maybe send
             # yourself an email
             messages.error(self.request, "Oops! something went wrong, we were notified. You were not charged. Please try again")
-            return redirect("/")
+            return redirect("home")
         except Exception as e:
             # Something else happened, completely unrelated to Stripe
             messages.error(self.request, "Oops! something went wrong, you were not charged. Please try again")
-            return redirect("/")
+            return redirect("home")
 
 
+def add_promocode(request):
+    if request.method == 'POST':
+        form = PromocodeForm(request.POST or None)
+        if form.is_valid():
+            try:
+                order = Order.objects.get(user=request.user, ordered=False)
+                if order.promocode:
+                    messages.error(request, "You can use only 1 promo code per order")
+                    return redirect('checkout')
 
+                code = form.cleaned_data.get('code')
+                promocode = Promocode.objects.get(code=code)
+                order.promocode = promocode
+                order.save()
+                messages.success(request, "Promo code is successfully added to your order")
+                return redirect('checkout')
+            except Order.DoesNotExist:
+                messages.error(request, "You do not have an active order")
+                return redirect('checkout')
+            except Promocode.DoesNotExist:
+                messages.error(request, "Promo code does not exist")
+                return redirect('checkout')
+        else:
+            messages.error(request, "Invalid promo code form")
+            return redirect('checkout')
+
+class RefundView(View):
+    def get(self, *args, **kwargs):
+        try:
+            ref_code = self.kwargs['ref_code']
+            order = Order.objects.get(user=self.request.user, ref_code=ref_code)
+            form = RefundForm
+            form.ref_code = ref_code
+
+            context = {
+                'order': order,
+                'form': form,
+            }
+            return render(self.request, "refund.html", context)
+        except Order.DoesNotExist:
+            messages.error(self.request, "Order does not exist")
+    def post(self, *args, **kwargs):
+        form = RefundForm(self.request.POST or None)
+        if form.is_valid():
+            ref_code = self.kwargs['ref_code']
+            reason = form.cleaned_data.get('reason')
+
+            try:
+                order = Order.objects.get(user=self.request.user, ref_code=ref_code)
+                order.refund_requested = True
+                order.save()
+
+                refund = Refund()
+                refund.order = order
+                refund.reason = reason
+                refund.save()
+
+                messages.success(self.request, "You requested a refund")
+                return redirect('orders')
+
+            except Order.DoesNotExist:
+                messages.error(self.request, "This order does not exist")
+                return redirect('refund')
+
+        messages.error(self.request, "Invalid form")
+        return redirect("refund")

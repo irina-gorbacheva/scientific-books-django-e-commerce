@@ -17,12 +17,14 @@
                         <label for="last_name">Last Name</label>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="input-field col s12">
                         <input name="address" id="address" type="text" class="validate">
                         <label for="address">Address </label>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="input-field col s4">
                         <input name="country" id="country" type="text" class="validate">
@@ -38,7 +40,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row input-field">
                     <p>
                       <label>
                         <input value="S" class="with-gap" type="radio"name="payment_option"/>
@@ -46,6 +48,7 @@
                       </label>
                     </p>
                 </div>
+
                 <div class="row">
                     <p>
                       <label>
@@ -55,18 +58,20 @@
                     </p>
                 </div>
                 <hr>
+
                 <div class="row">
                     <p>
                         <label>
-                            <input type="checkbox" name="same_shipping_address" id="same_shipping_address" class="filled-in light-blue lighten-2">
+                            <input type="checkbox" name="same_shipping_address" id="same_shipping_address" class="filled-in">
                             <span>Shipping address same as billing address</span>
                         </label>
                     </p>
                 </div>
+
                 <div class="row">
                     <p>
                         <label>
-                            <input type="checkbox" name="save_info" class="filled-in light-blue lighten-2">
+                            <input type="checkbox" name="save_info" class="filled-in">
                             <span>Save info</span>
                         </label>
                     </p>
@@ -80,9 +85,7 @@
         </div>
      </div>
 
-    <div class="form2 white z-depth-2">
-        <h4>Your order</h4>
-    </div>
+    {% include "order_summary.html" %}
 
 
 {% endblock content %}

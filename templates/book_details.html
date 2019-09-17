@@ -8,12 +8,11 @@
     <div class="container">
         <div class="book">
             <img class="bookimg" src="/media/{{ book.image }}"/>
-            <a href="{%  url 'add_to_cart' book.slug %}" class="waves-effect light-blue lighten-2 btn add">Add to a cart</a>
+            <a href="{%  url 'add_to_cart' book.slug %}" class="waves-effect green btn add">Add to a cart</a>
             <a href="{%  url 'remove_from_cart' book.slug %}" class="waves-effect red btn add">Remove from cart</a>
-
         <!-- Displaying messages-->
-
         </div>
+
         <div class="text">
         <h3> {{ book.title }}</h3>
         <h5> Author: {{ book.author }} </h5>
@@ -25,7 +24,6 @@
             <p> Average Customer Review: {{ book.rating }}</p>
         <p> PRICE: {{ book.price }}$ </p>
         </div>
-
     </div>
 </section>
 

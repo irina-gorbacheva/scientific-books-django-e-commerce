@@ -58,9 +58,10 @@
                         {% else %}
                             <li>
                                 <a href="{%  url 'cart' %}" class="btn-small light-blue darken-4 cart"><i class="material-icons light-blue-text">shopping_cart</i></a>
+                                <a class="light-blue darken-4 btn-small orders-btn" href="{% url 'orders' %}">Orders</a>
                             </li>
-                             <li>
-                                <a class="waves-effect light-blue lighten-2 btn-small signout_btn" href="{% url 'account_logout' %}">Logout</a>
+                            <li>
+                                <a class="light-blue lighten-2 btn-small signout_btn" href="{% url 'account_logout' %}">Logout</a>
                             </li>
                         {% endif %}
                     </ul>

@@ -36,12 +36,20 @@ class OrderedBook(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    ref_code = models.CharField(max_length=20)
     books = models.ManyToManyField(OrderedBook)
     ordered = models.BooleanField(default=False)
     creation_date = models.DateField(auto_now_add=True)
     ordered_date = models.DateField()
     billing_info = models.ForeignKey('BillingInfo', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
+    promocode = models.ForeignKey('Promocode', on_delete=models.SET_NULL, blank=True, null=True)
+
+    #delivering
+    being_delivered = models.BooleanField(default=False)
+    received = models.BooleanField(default=False)
+    refund_requested = models.BooleanField(default=False)
+    refund_granted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Order by {self.user}"
@@ -50,6 +58,8 @@ class Order(models.Model):
         total = 0
         for ordered_book in self.books.all():
             total += ordered_book.get_final_price()
+        if self.promocode:
+            total-= total * self.promocode.percentage / 100
         return total
 
 class BillingInfo(models.Model):
@@ -83,3 +93,16 @@ class Payment(models.Model):
     def __str__(self):
         return self.user.username
 
+class Promocode(models.Model):
+    code = models.CharField(max_length=20)
+    percentage = models.IntegerField(default=5)
+    def __str__(self):
+        return self.code
+
+class Refund(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reason = models.TextField()
+    refunded = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.pk}"

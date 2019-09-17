@@ -34,7 +34,40 @@
 
             <form class="login" method="POST" action="{% url 'account_login' %}">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div class="row">
+                    <div class="input-field">
+                        <input class="form-control validate" id="id_login" maxlength="30" name="login" type="text" />
+                        <label for="login">Login</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field">
+                        <input class="form-control validate" id="id_password" maxlength="30" name="password" type="password" />
+                        <label for="id_password">Password</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <p>
+                        <label>
+                            <input type="checkbox" name="remember" id="id_remember" class="filled-in light-blue lighten-2">
+                            <span>Remember me</span>
+                        </label>
+                    </p>
+                </div>
+
+
+
+                <div class="row">
+                    {% if form.non_field_errors %}
+                    <ul class='form-errors'>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
                 {% if redirect_field_value %}
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                 {% endif %}

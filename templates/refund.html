@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="form3 white z-depth-2">
+    <h3>Request a refund </h3>
+        <div class="row">
+            <form class="col s12" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea name="reason" id="reason" type="text" class="materialize-textarea validate" placeholder="Tell us what's wrong"></textarea>
+                    </div>
+                </div>
+                <div class="right-align total">
+                    <button type="submit" class="waves-effect waves-light btn green checkout">Request a refund</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}
