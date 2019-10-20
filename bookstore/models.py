@@ -40,7 +40,7 @@ class Order(models.Model):
     books = models.ManyToManyField(OrderedBook)
     ordered = models.BooleanField(default=False)
     creation_date = models.DateField(auto_now_add=True)
-    ordered_date = models.DateField()
+    ordered_date = models.DateField(null=True)
     billing_info = models.ForeignKey('BillingInfo', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     promocode = models.ForeignKey('Promocode', on_delete=models.SET_NULL, blank=True, null=True)
@@ -102,6 +102,7 @@ class Promocode(models.Model):
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     reason = models.TextField()
+    email = models.EmailField()
     refunded = models.BooleanField(default=False)
 
     def __str__(self):

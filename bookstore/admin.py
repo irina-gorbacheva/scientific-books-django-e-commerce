@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import  Book, OrderedBook, Order, Payment, Promocode
 
 # Register your models here.
+#TODO:
+#def accept_refund(modeladmin, request, queryset):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'ordered', 'being_delivered', 'received', 'refund_requested', 'refund_granted', 'billing_info', 'payment', 'promocode']
     list_display_links = ['user', 'billing_info', 'payment', 'promocode']

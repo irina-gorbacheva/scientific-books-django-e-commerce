@@ -408,6 +408,7 @@ class RefundView(View):
                 refund = Refund()
                 refund.order = order
                 refund.reason = reason
+                refund.email = self.request.user.email
                 refund.save()
 
                 messages.success(self.request, "You requested a refund")
