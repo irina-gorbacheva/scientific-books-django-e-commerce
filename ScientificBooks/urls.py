@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('error', views.error, name='error'),
+    path('no_books_found', views.no_books_found, name='no_books_found'),
 
     path('book_details/<slug>/', views.BookDetailView.as_view(), name='book_details'),
 

@@ -11,8 +11,8 @@ class CheckoutForm(forms.Form):
     country = forms.CharField()
     city = forms.CharField()
     zip = forms.CharField()
-    same_shipping_address = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     save_info = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
+    use_default_info = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     payment_option = forms.ChoiceField(widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
 
 class PromocodeForm(forms.Form):

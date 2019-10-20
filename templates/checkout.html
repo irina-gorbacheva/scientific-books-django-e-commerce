@@ -62,21 +62,24 @@
                 <div class="row">
                     <p>
                         <label>
-                            <input type="checkbox" name="same_shipping_address" id="same_shipping_address" class="filled-in">
-                            <span>Shipping address same as billing address</span>
-                        </label>
-                    </p>
-                </div>
-
-                <div class="row">
-                    <p>
-                        <label>
                             <input type="checkbox" name="save_info" class="filled-in">
                             <span>Save info</span>
                         </label>
                     </p>
-
                 </div>
+                {% if default_shipping_info %}
+                <div class="row">
+                    <p>
+                        <label>
+                            <input type="checkbox" name="use_default_info" class="filled-in">
+                            <span>Use default info: {{ default_shipping_info.last_name }} {{ default_shipping_info.first_name}}
+                            {{ default_shipping_info.address }} {{ default_shipping_info.city}}
+                            {{ default_shipping_info.country }} {{ default_shipping_info.zip}} </span>
+                        </label>
+                    </p>
+                </div>
+                {% endif %}
+
                 <hr>
                 <div class="right-align total">
                     <button type="submit" class="waves-effect waves-light btn green checkout">Continue</button>

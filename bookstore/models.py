@@ -1,6 +1,18 @@
 from django.db import models
 from django.conf import settings
+from django.dispatch import dispatcher
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
+    one_click_purchasing = models.BooleanField()
+
+    def __str__(self):
+        return self.user.username
 
 class Book(models.Model):
     CATEGORY_CHOICES=[("AS", "Astronomy"), ("PH", "Physics"), ("MA", "Mathematics"),
@@ -41,7 +53,7 @@ class Order(models.Model):
     ordered = models.BooleanField(default=False)
     creation_date = models.DateField(auto_now_add=True)
     ordered_date = models.DateField(null=True)
-    billing_info = models.ForeignKey('BillingInfo', on_delete=models.SET_NULL, blank=True, null=True)
+    shipping_info = models.ForeignKey('OrderInfo', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     promocode = models.ForeignKey('Promocode', on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -62,7 +74,7 @@ class Order(models.Model):
             total-= total * self.promocode.percentage / 100
         return total
 
-class BillingInfo(models.Model):
+class OrderInfo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -70,8 +82,9 @@ class BillingInfo(models.Model):
     country = models.CharField(max_length=30)
     city = models.CharField(max_length=30)
     zip = models.CharField(max_length=20)
+    default = models.BooleanField(default=False)
 
-    def new_info(self, user, first_name, last_name, address, country, city, zip):
+    def new_info(self, user, first_name, last_name, address, country, city, zip, default=False):
         self.user = user
         self.first_name = first_name
         self.last_name = last_name
@@ -79,6 +92,7 @@ class BillingInfo(models.Model):
         self.country = country
         self.city = city
         self.zip = zip
+        self.default = default
 
 
     def __str__(self):
@@ -107,3 +121,9 @@ class Refund(models.Model):
 
     def __str__(self):
         return f"{self.pk}"
+
+def userprofile_receiver(sender, instance, created, *args, **kwargs):
+    if created:
+        userprofile = UserProfile.objects.create(user=instance)
+
+post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)

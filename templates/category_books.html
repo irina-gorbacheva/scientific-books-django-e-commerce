@@ -11,17 +11,18 @@
         <div class="row">
             {% for book in books %}
             <div class="col s12 m3">
+            <a href="{%  url 'book_details' book.slug %}" class="book_title">
                 <div class="card">
                     <div class="card-image discipline hoverable">
-
                         <img src="/media/{{ book.image }}" class="responsive-img book_list_img">
                     </div>
                     <div class="card-content">
-                        <a href="{%  url 'book_details' book.slug %}"> {{ book.title }}</a>
+                        <a href="{%  url 'book_details' book.slug %}" class="book_title"> {{ book.title }}</a>
+                        <p> by {{ book.author }}</p>
                         <p>{{ book.price }}$ </p>
                     </div>
-
                 </div>
+            </a>
             </div>
             {% endfor %}
 

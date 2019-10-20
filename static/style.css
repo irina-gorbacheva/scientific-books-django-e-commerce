@@ -2,10 +2,20 @@
 .body{
     min-height: 100%;!important;
 }
-
-.brand-logo {
-    margin-left: 2% !important;
-    font-size: 170% !important;
+@media (min-width: 1200px) {
+    nav .brand-logo {
+        margin-left: 2%; !important;
+        font-size: 500%; !important;
+    }
+}
+@media (max-width: 1200px) {
+    .brand-logo {
+        position: fixed; !important;
+        display: inline; !important;
+        margin-left: 1%; !important;
+        width:40%; !important;
+        font-size: 70%; !important;
+    }
 }
 
 .home-logo:hover {
@@ -46,26 +56,55 @@
     cursor: pointer; !important;
 }
 /* DETAILED BOOK VIEW */
-.book {
+
+@media (min-width: 700px) {
+  .book {
+      display: inline-block; !important;
+      vertical-align: top; !important;
+      width: 40%; !important;
+      margin: 4% 0 0 7%; !important;
+  }
+  .bookimg {
      display: inline-block; !important;
      vertical-align: top; !important;
-     width: 35%; !important;
-     margin: 20px 30px 0 0; !important;
-}
-.bookimg {
-    display: inline-block; !important;
-    vertical-align: top; !important;
-    width: 100%; !important;
-    height:40%; !important;
-    margin: 2% 0 0 0;
-}
-.text {
+     width: 70%; !important;
+     height:40%; !important;
+     /*margin: 10% 0 0 15%;*/
+  }
+  .add {
+    width: 70%; !important;
+    margin: 1% 0 3% 0; !important;
+  }
+  .text {
      display: inline-block; !important;
      width: 50%;
+    }
 }
-.add {
+@media (max-width: 700px) {
+    .book {
+        width: 100%; !important;
+     /* margin: 4% 0 0 7%; !important;*/
+    }
+    .bookimg {
+        width: 100%; !important;
+        height:100%; !important;
+     /*margin: 10% 0 0 15%;*/
+    }
+    .add {
+        margin:1%; !important;
+        width:100%; !important;
+    }
+}
+
+.book_title {
+    font-weight: bolder; !important;
+    color: black; !important;
+    font-size: 115%; !important;
+}
+
+.card {
     width: 100%; !important;
-    margin: 3% 0 3% 0; !important;
+    height: 70%; !important;
 }
 
 .search_filter {
